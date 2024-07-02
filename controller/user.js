@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const httpStatusCode = require("../constant/httpStatuscode");
 const userModel = require("../models/user");
-const inputValidation = require("express-validator");
+const {validationResult} = require("express-validator");
 const jwt = require("jsonwebtoken");
 
 
@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 const userRegistration = async (req, res) =>{
     // input validation incoming request from data
     try {
-        const errors = inputValidation(req);
+        const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(httpStatusCode.BAD_REQUEST).json({
                 success:false,
@@ -36,10 +36,11 @@ const userRegistration = async (req, res) =>{
                     email,
                     password:hash
                 });
-
-                let token = jwt.sign({email}, "shhhhhhhhhh")
-                res.cookie("token", token);
-                res.send(newUser);
+                return res.status(httpStatusCode.OK).json({
+                    success:true,
+                    message:"User created",
+                    data: newUser,
+                })
             });
         });    
         
@@ -55,7 +56,7 @@ const userRegistration = async (req, res) =>{
 
 const userLogin = async (req, res) =>{
     try {
-        const errors = inputValidation(req);
+        const errors = validationResult(req);
         if(!errors.isEmpty()){
             return res.status(httpStatusCode.BAD_REQUEST).json({
                 success:false,
@@ -64,7 +65,8 @@ const userLogin = async (req, res) =>{
         }
     
     const {email, password} = req.body;
-    let user = userModel.findOne({email});
+    let user = await userModel.findOne({email});
+    console.log(email, password,);
     if(!user){
         return res.status(httpStatusCode.UNAUTHORIZED).json({
             success:false,
@@ -78,7 +80,8 @@ const userLogin = async (req, res) =>{
             res.cookie("token", token);
             res.status(httpStatusCode.OK).json({
                 success:true,
-                message:"Successfully logged in!"
+                message:"Successfully logged in!",
+                data:user,
             })
         }else{
             res.status(httpStatusCode.UNAUTHORIZED).json({
