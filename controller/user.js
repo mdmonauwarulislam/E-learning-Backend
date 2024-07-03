@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const httpStatusCode = require("../constant/httpStatuscode");
 const userModel = require("../models/user");
 const {validationResult} = require("express-validator");
-const jwt = require("jsonwebtoken");
+const {getToken} = require("../middleware/auth")
 
 
 
@@ -54,6 +54,7 @@ const userRegistration = async (req, res) =>{
     }
 };
 
+// ```````````````````````````````````````````````````````````````````user Login ````````````````````````````````````````````````````````````
 const userLogin = async (req, res) =>{
     try {
         const errors = validationResult(req);
@@ -76,7 +77,7 @@ const userLogin = async (req, res) =>{
 
     bcrypt.compare(password, user.password, async (err, result) =>{
         if(result){
-            let token = jwt.sign({email:user.email}, "shhhhhhhhhh")
+            const token = await getToken(user);
             res.cookie("token", token);
             res.status(httpStatusCode.OK).json({
                 success:true,
