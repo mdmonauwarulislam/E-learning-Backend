@@ -1,21 +1,62 @@
 const mongoose = require("mongoose");
 
-const lessonSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        required:true,
+const courseSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
     },
-    duration:{
-        type:String,
-        required:true,
+    description: {
+        type: String,
+        required: true,
     },
-    lessonNumber:{
-        type:String,
-        required:true,
+    weekDuration: {
+        type: String,
+        required: true,
     },
-    
-});
+    courseLevel: {
+        type: String,
+        required: true,
+    },
 
-const partSchema = new mongoose.Schema({
-    
-})
+    subCourse: [{
+        part: {
+            type: String,
+            required: true,
+        },
+        title: {
+            type: String,
+            required: true,
+        },
+        courseLesson: [{
+            lessonTitle: {
+                type: String,
+                required: true,
+            },
+            lessonNumber: {
+                type: String,
+                required: true,
+            },
+            lessonDuration: {
+                type: String,
+                required: true,
+            },
+            lessonVideoUrl: {
+                type: String,
+                required: true,
+            },
+
+        }]
+    }],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+
+
+
+
+}, { timestamps: true });
+
+
+module.exports = mongoose.model("Course", courseSchema);

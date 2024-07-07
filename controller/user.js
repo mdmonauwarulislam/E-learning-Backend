@@ -78,7 +78,7 @@ const userLogin = async (req, res) => {
             return res.status(httpStatusCode.OK).json({
                 success: true,
                 message: "Successfully logged in!",
-                data: user,
+                data: {user,token},
             });
         } else {
             return res.status(httpStatusCode.UNAUTHORIZED).json({
