@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const httpStatusCode = require("../constant/httpStatuscode");
-const userModel = require("../models/user");
+const userModel = require("../models/usersModel");
 const { validationResult } = require("express-validator");
-const { getToken } = require("../middleware/auth");
+const { getToken } = require("../middleware/authMiddleware");
 
 const userRegistration = async (req, res) => {
     try {
@@ -32,7 +32,8 @@ const userRegistration = async (req, res) => {
         let newUser = await userModel.create({
             fullName,
             email,
-            password: hash
+            password: hash,
+            role:"User",
         });
 
         return res.status(httpStatusCode.OK).json({

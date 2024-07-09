@@ -1,4 +1,4 @@
-const userModel = require("../models/user");
+const userModel = require("../models/usersModel");
 const httpStatusCode = require("../constant/httpStatuscode");
 
 const viewProfile = async (req, res) => {

@@ -27,7 +27,18 @@ async function verifyToken(req, res, next) {
     }
 }
 
+async function verifyAdmin(req, res, next) {
+    if (req.user.role !== 'admin') {
+        return res.status(httpStatusCode.FORBIDDEN).json({
+            success: false,
+            message: 'Forbidden: You do not have the necessary permissions'
+        });
+    }
+    next();
+}
+
 module.exports = {
     getToken,
-    verifyToken
+    verifyToken, 
+    verifyAdmin,
 };

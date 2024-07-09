@@ -1,5 +1,5 @@
-const Courses = require("../models/course");
-const userModel = require("../models/user");
+const Courses = require("../models/coursesModel");
+const userModel = require("../models/usersModel");
 const httpStatusCode = require("../constant/httpStatuscode");
 const { validationResult } = require("express-validator");
 
@@ -153,13 +153,13 @@ const viewCourse = async (req, res) => {
     if (!course) {
       return res.status(httpStatusCode.NOT_FOUND).json({
         success: false,
-        message: "Course not found",
+        message: "Courses not found",
       });
     }
 
     return res.status(httpStatusCode.OK).json({
       success: true,
-      message: "Course retrieved successfully",
+      message: "Courses retrieved successfully",
       course,
     });
   } catch (error) {
@@ -178,12 +178,12 @@ const viewCourseList = async(req, res) => {
     if(!courseList){
       return res.status(httpStatusCode.NOT_FOUND).json({
         success:false,
-        message:"Course List not founded!",
+        message:"Courses List not founded!",
       });
     }
     return res.status(httpStatusCode.OK).json({
       success:true,
-      message:"Course List founded!",
+      message:"Courses List founded!",
       data:courseList,
     })
   } catch (error) {
@@ -195,4 +195,27 @@ const viewCourseList = async(req, res) => {
     });
   }
 }
-module.exports = { createCourse, updateCourse, deleteCourse, viewCourse, viewCourseList };
+const viewSingleCourse = async(req, res) => {
+  try {
+    const singleCourse = await Courses.find();
+    if(!singleCourse){
+      return res.status(httpStatusCode.NOT_FOUND).json({
+        success:false,
+        message:"Course not founded!",
+      });
+    }
+    return res.status(httpStatusCode.OK).json({
+      success:true,
+      message:"Course founded!",
+      data:singleCourse,
+    })
+  } catch (error) {
+    console.error("Error viewing course List:", error);
+    res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "Could not retrieve course List",
+      error: error.message,
+    });
+  }
+}
+module.exports = { createCourse, updateCourse, deleteCourse, viewCourse, viewCourseList, viewSingleCourse };
