@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const httpStatusCode = require("../constant/httpStatuscode");
 const userModel = require("../models/usersModel");
+const adminModel = require("../models/adminModel")
 const { validationResult } = require("express-validator");
 const { getToken } = require("../middleware/authMiddleware");
 
@@ -33,7 +34,7 @@ const userRegistration = async (req, res) => {
             fullName,
             email,
             password: hash,
-            role:"User",
+            role: "User",
         });
 
         return res.status(httpStatusCode.OK).json({
@@ -62,9 +63,14 @@ const userLogin = async (req, res) => {
             });
         }
 
-        const { email, password } = req.body;
-        let user = await userModel.findOne({ email });
+        const { email, password, } = req.body;
 
+
+        let user = await userModel.findOne({ email });
+        if (!user) {
+            user = await adminModel.findOne({ email });
+
+        }
         if (!user) {
             return res.status(httpStatusCode.UNAUTHORIZED).json({
                 success: false,
@@ -72,19 +78,26 @@ const userLogin = async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        let isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(httpStatusCode.BAD_REQUEST).json({
+                success: false,
+                message: "Email or password is incorrect!",
+            });
+        }
+
         if (isMatch) {
             const token = await getToken(user);
             res.cookie("token", token);
             return res.status(httpStatusCode.OK).json({
                 success: true,
                 message: "Successfully logged in!",
-                data: {user,token},
+                data: { user, token },
             });
         } else {
             return res.status(httpStatusCode.UNAUTHORIZED).json({
                 success: false,
-                message: "Invalid email or password!"
+                message: "Invalid email or password!",
             });
         }
     } catch (error) {
@@ -96,5 +109,6 @@ const userLogin = async (req, res) => {
         });
     }
 };
+
 
 module.exports = { userRegistration, userLogin };

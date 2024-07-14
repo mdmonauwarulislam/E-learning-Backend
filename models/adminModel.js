@@ -18,9 +18,10 @@ const adminSchema = new mongoose.Schema({
   role:{
     type:String,
     required: true,
-  }
+  },
+  course :[],
 }, { timestamps: true });
 
-const Admin = mongoose.model('Admin', adminSchema);
+const Admin = mongoose.model('admin', adminSchema);
 
 module.exports = Admin;

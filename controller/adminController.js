@@ -48,47 +48,6 @@ const adminRegister = async (req, res) => {
     }
 }
 
-const adminLogin = async (req, res) => {
-    try {
-        const {email, password} = req.body;
-        if(!email || !password){
-            return res.status(httpStatuscode.INTERNAL_SERVER_ERROR).json({
-                success:false,
-                message:"You must have to filled all input!",
-            })
-        }
 
-        const admin = await adminModel.findOne({email});
 
-        if(!admin){
-            return res.status(httpStatuscode.BAD_REQUEST).json({
-                success:false,
-                message:"User not exist!",
-            })
-        }
-
-        const validPassword = await bcrypt.compare(password, admin.password)
-        if(!validPassword){
-            return res.status(httpStatuscode.BAD_REQUEST).json({
-                success:false,
-                message:"Email or password is incorrect !"
-            })
-        }
-
-        const token = getToken(admin);
-        return res.status(httpStatuscode.OK).json({
-            success:true,
-            message:"Successfully Loggedin",
-            data:{admin, token}
-        })
-
-    } catch (error) {
-        return res.status(httpStatuscode.BAD_REQUEST).json({
-            success: false,
-            message: "Something went wrong while registering",
-            error: error.message,
-        });
-    }
-}
-
-module.exports = {adminRegister, adminLogin}
+module.exports = {adminRegister,}

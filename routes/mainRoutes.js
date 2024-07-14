@@ -5,7 +5,7 @@ const { userRegistration, userLogin } = require("../controller/usersController")
 const { viewProfile } = require("../controller/viewProfileController");
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 const {createCourse, updateCourse, deleteCourse, viewCourse, viewCourseList, viewSingleCourse} = require("../controller/coursesController");
-const {adminRegister, adminLogin} = require("../controller/adminController")
+const {adminRegister, } = require("../controller/adminController")
 
 // user routes
 Router.post("/user/signup", userRegistration);
@@ -13,7 +13,6 @@ Router.post("/user/login", userLogin);
 
 // admin routes
 Router.post("/admin/signup", adminRegister);
-Router.post("/admin/login", adminLogin);
 
 // view profile routes
 Router.get("/profile", verifyToken, viewProfile);

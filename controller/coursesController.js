@@ -22,7 +22,7 @@ const createCourse = async (req, res) => {
       });
     }
     const userId = req.user._id;
-    const { title, description, subCourse,weekDuration, courseLevel } = req.body;
+    const { title, description, subCourse, weekDuration, courseLevel } = req.body;
     const course = await Courses.create({
       title,
       description,
@@ -31,10 +31,10 @@ const createCourse = async (req, res) => {
       courseLevel,
       createdBy: userId,
     });
-    if(!course){
+    if (!course) {
       return res.status(httpStatusCode.BAD_REQUEST).json({
-        success:false,
-        message:"Course not created",
+        success: false,
+        message: "Course not created",
       })
     }
     return res.status(httpStatusCode.OK).json({
@@ -65,7 +65,7 @@ const updateCourse = async (req, res) => {
 
     const courseId = req.params.id;
     const userId = req.user.id;
-    const { title, description, subCourse , weekDuration, courseLevel} = req.body;
+    const { title, description, subCourse, weekDuration, courseLevel } = req.body;
 
     const course = await Courses.findById(courseId);
 
@@ -88,7 +88,7 @@ const updateCourse = async (req, res) => {
     course.weekDuration = weekDuration || course.weekDuration;
     course.courseLevel = courseLevel || course.courseLevel;
     course.subCourse = subCourse || course.subCourse;
-    
+
 
     await course.save();
 
@@ -172,42 +172,43 @@ const viewCourse = async (req, res) => {
   }
 };
 
-const viewCourseList = async(req, res) => {
+const viewCourseList = async (req, res) => {
   try {
-    const courseList = await Courses.find();
-    if(!courseList){
+    const courseList = await Courses.find().populate({ path: 'createdBy', });
+    if (!courseList.length) {
       return res.status(httpStatusCode.NOT_FOUND).json({
-        success:false,
-        message:"Courses List not founded!",
+        success: false,
+        message: "No courses found!",
       });
     }
     return res.status(httpStatusCode.OK).json({
-      success:true,
-      message:"Courses List founded!",
-      data:courseList,
-    })
+      success: true,
+      message: "Courses list retrieved successfully!",
+      data: courseList,
+    });
   } catch (error) {
-    console.error("Error viewing course List:", error);
+    console.error("Error viewing course list:", error);
     res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Could not retrieve course List",
+      message: "Could not retrieve course list",
       error: error.message,
     });
   }
-}
-const viewSingleCourse = async(req, res) => {
+};
+
+const viewSingleCourse = async (req, res) => {
   try {
     const singleCourse = await Courses.find();
-    if(!singleCourse){
+    if (!singleCourse) {
       return res.status(httpStatusCode.NOT_FOUND).json({
-        success:false,
-        message:"Course not founded!",
+        success: false,
+        message: "Course not founded!",
       });
     }
     return res.status(httpStatusCode.OK).json({
-      success:true,
-      message:"Course founded!",
-      data:singleCourse,
+      success: true,
+      message: "Course founded!",
+      data: singleCourse,
     })
   } catch (error) {
     console.error("Error viewing course List:", error);
