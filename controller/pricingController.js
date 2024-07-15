@@ -2,8 +2,6 @@ const pricingModel = require("../models/pricingModel");
 
 const getPricingPlan = async (req, res) => {
     try {
-
-        
         
     } catch (error) {
         return res.status(httpStatuscode.BAD_REQUEST).json({
