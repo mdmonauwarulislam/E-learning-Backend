@@ -17,7 +17,15 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    demoVideoUrl: {
+        type: String,
+        default: '',
+    },
 
+    purchasedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     subCourse: [{
         part: {
             type: String,
@@ -44,7 +52,6 @@ const courseSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
-
         }]
     }],
     createdBy: {
@@ -52,11 +59,6 @@ const courseSchema = new mongoose.Schema({
         ref: 'admin',
         required: true,
     },
-
-
-
-
 }, { timestamps: true });
-
 
 module.exports = mongoose.model("Course", courseSchema);

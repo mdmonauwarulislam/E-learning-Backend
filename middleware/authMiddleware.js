@@ -9,8 +9,7 @@ async function getToken(user) {
 }
 
 async function verifyToken(req, res, next) {
-    const token = req.headers.authorization 
-    // && req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     console.log(token);
 
     if (!token) {

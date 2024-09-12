@@ -1,5 +1,6 @@
 const Courses = require("../models/coursesModel");
 const userModel = require("../models/usersModel");
+const adminModel = require("../models/adminModel");
 const httpStatusCode = require("../constant/httpStatuscode");
 const { validationResult } = require("express-validator");
 
@@ -14,7 +15,7 @@ const createCourse = async (req, res) => {
       });
     }
 
-    const user = await userModel.findById(req.user._id);
+    const user = await adminModel.findById(req.user._id);
     if (!user) {
       return res.status(httpStatusCode.BAD_REQUEST).json({
         success: false,
@@ -22,13 +23,14 @@ const createCourse = async (req, res) => {
       });
     }
     const userId = req.user._id;
-    const { title, description, subCourse, weekDuration, courseLevel } = req.body;
+    const { title, description, subCourse, weekDuration, courseLevel, demoVideoUrl } = req.body;
     const course = await Courses.create({
       title,
       description,
       subCourse,
       weekDuration,
       courseLevel,
+      demoVideoUrl,
       createdBy: userId,
     });
     if (!course) {
@@ -52,6 +54,7 @@ const createCourse = async (req, res) => {
   }
 };
 
+
 const updateCourse = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -65,7 +68,7 @@ const updateCourse = async (req, res) => {
 
     const courseId = req.params.id;
     const userId = req.user.id;
-    const { title, description, subCourse, weekDuration, courseLevel } = req.body;
+    const { title, description, subCourse, weekDuration, courseLevel, demoVideoUrl } = req.body;
 
     const course = await Courses.findById(courseId);
 
@@ -88,7 +91,7 @@ const updateCourse = async (req, res) => {
     course.weekDuration = weekDuration || course.weekDuration;
     course.courseLevel = courseLevel || course.courseLevel;
     course.subCourse = subCourse || course.subCourse;
-
+    course.demoVideoUrl = demoVideoUrl || course.demoVideoUrl;  // Update demo video URL
 
     await course.save();
 
@@ -172,9 +175,10 @@ const viewCourse = async (req, res) => {
   }
 };
 
+
 const viewCourseList = async (req, res) => {
   try {
-    const courseList = await Courses.find().populate({ path: 'createdBy', });
+    const courseList = await Courses.find().populate({ path: 'createdBy' });
     if (!courseList.length) {
       return res.status(httpStatusCode.NOT_FOUND).json({
         success: false,
@@ -196,27 +200,32 @@ const viewCourseList = async (req, res) => {
   }
 };
 
+
 const viewSingleCourse = async (req, res) => {
   try {
-    const singleCourse = await Courses.find();
+    const courseId = req.params.id;  
+    console.log("Course  Id  :",courseId);
+    const singleCourse = await Courses.findById(courseId);
+    console.log(singleCourse);
     if (!singleCourse) {
       return res.status(httpStatusCode.NOT_FOUND).json({
         success: false,
-        message: "Course not founded!",
+        message: "Course not found!",
       });
     }
     return res.status(httpStatusCode.OK).json({
       success: true,
-      message: "Course founded!",
+      message: "Course found!",
       data: singleCourse,
-    })
+    });
   } catch (error) {
-    console.error("Error viewing course List:", error);
+    console.error("Error viewing single course:", error);
     res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Could not retrieve course List",
+      message: "Could not retrieve course",
       error: error.message,
     });
   }
-}
+};
+
 module.exports = { createCourse, updateCourse, deleteCourse, viewCourse, viewCourseList, viewSingleCourse };

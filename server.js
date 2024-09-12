@@ -4,6 +4,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const userRoutes = require("./routes/mainRoutes");
+const purchaseRoutes = require("./routes/purchaseRoutes");
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use(
 );
 
 app.use("/", userRoutes);
+app.use("/api", purchaseRoutes);
 
 const port = PORT || 5000;
 
