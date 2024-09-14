@@ -23,7 +23,7 @@ Router.put("/course/:id", verifyToken, verifyAdmin, updateCourse);
 Router.delete("/course/:id", verifyToken, verifyAdmin, deleteCourse);
 Router.get("/course/:id", verifyToken, viewCourse);
 Router.get("/view-course-list", viewCourseList);
-Router.get("/view-single-course", viewSingleCourse);
+Router.get("/view-single-course/:id", viewSingleCourse);
 
 
 module.exports = Router;

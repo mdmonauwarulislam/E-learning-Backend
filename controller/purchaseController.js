@@ -1,54 +1,76 @@
+
+
+const Enrollment = require("../models/EnrollmentModel"); 
 const Course = require("../models/coursesModel");
 const User = require("../models/usersModel");
-const httpStatusCode = require("../constant/httpStatuscode")
+const httpsStatusCode = require("../constant/httpStatuscode")
 
+// Purchase course and enroll the user
 const purchaseCourse = async (req, res) => {
-  const { courseId } = req.body;
-  const userId = req.user.id;
+  const userId = req.user._id; // Extracting user info from token (middleware)
+  const { courseId } = req.body; 
+  console.log("courseid :", courseId);
+  console.log("userid :", userId);
+ 
 
   try {
-    // Find the course
+    // Check if the user is already enrolled in the course
+    const existingEnrollment = await Enrollment.findOne({ user: userId, course: courseId });
+
+    if (existingEnrollment) {
+      return res.status(httpsStatusCode.CONFLICT).json({ 
+        success: false,
+        message: "You are already enrolled in this course." });
+    }
+
+    // Check if the course exists
     const course = await Course.findById(courseId);
     if (!course) {
-      return res.status(httpStatusCode.BAD_REQUEST).json({ 
-        message: 'Course not found' 
+      return res.status(httpsStatusCode.NOT_FOUND).json({
+        success: false, 
+        message: "Course not found." 
       });
     }
 
-    // Find the user
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(httpStatusCode.BAD_REQUEST).json({ 
-        message: 'User not found' 
+    if(!user) {
+      return res.status(httpsStatusCode).json({ 
+        success: false,
+        message: "User not found." 
       });
     }
 
-    // Check if course is already purchased
-    if (user.purchasedCourses.includes(courseId)) {
-      return res.status(httpStatusCode.BAD_REQUEST).json({ 
-        message: 'Course ready purchased' 
-      });
-    }
-    if(course.purchasedBy.includes(userId)){
-      return res.status(httpStatusCode.BAD_REQUEST).json({
-        message : "course already purchased"
+    // Create a new enrollment record
+    const newEnrollment = await Enrollment.create({
+      user: userId,
+      course: courseId,
+      enrolledOn: new Date(),
+    });
+    if (!newEnrollment) {
+      return res.status(httpsStatusCode.INTERNAL_SERVER_ERROR).json({ 
+        sucess: false,
+        message: "Enrollment error" 
       });
     }
 
-    // Add course to purchased courses
-    user.purchasedCourses.push(courseId);
-    await user.save();
     course.purchasedBy.push(userId);
     await course.save();
-    res.status(httpStatusCode.OK).json({
-       message: 'Course purchased successfully' 
-      });
+    user.purchasedCourses.push(courseId);
+    await user.save();
+
+
+    return res.status(httpsStatusCode.OK).json({ 
+      sucess : true,
+      message: "Successfully enrolled in the course."
+     });
   } catch (error) {
-    console.error('Error purchasing course:', error);
-    res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({ 
-      message: 'Server error' 
+    return res.status(httpsStatusCode).json({ 
+      success: false,
+      message: "Error enrolling in the course.", error : error.message 
     });
   }
 };
 
-module.exports = { purchaseCourse };
+module.exports = {
+  purchaseCourse,
+};
