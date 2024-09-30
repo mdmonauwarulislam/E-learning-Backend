@@ -2,7 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const path = require("path");
 const userRoutes = require("./routes/mainRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes");
 

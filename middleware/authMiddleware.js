@@ -36,8 +36,19 @@ async function verifyAdmin(req, res, next) {
     next();
 }
 
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(httpStatusCode.UNAUTHORIZED).json({ 
+        success : false,
+        message: 'Please log in to continue' });
+};
+
+
 module.exports = {
     getToken,
     verifyToken, 
     verifyAdmin,
+    isAuthenticated
 };

@@ -1,10 +1,8 @@
-// enrollmentController.js
-
 const Enrollment = require("../models/EnrollmentModel");
 
 // Check if the user is enrolled in the course
 const checkEnrollment = async (req, res) => {
-  const userId = req.user.id; // Get user ID from token (middleware)
+  const userId = req.user._id; // Get user ID from token (middleware)
   const courseId = req.params.courseId; // Get course ID from route params
 
   try {
@@ -13,8 +11,6 @@ const checkEnrollment = async (req, res) => {
 
     if (enrollment) {
       return res.status(200).json({ enrolled: true });
-    } else {
-      return res.status(200).json({ enrolled: false });
     }
   } catch (error) {
     return res.status(500).json({ message: "Error checking enrollment status.", error });
